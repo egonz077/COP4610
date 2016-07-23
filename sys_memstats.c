@@ -27,22 +27,56 @@
  */
 
 /*
-1.the current number of free pages (over all memory zones);                             -> linux/mmzone.h -> zone struct -> free pages
-2.the current number of pages used by slab allocator (over all memory zones);
-3.the current number of pages in the active list (over all memory zones);               -> linux/mmzone.h -> zone struct->active_list
-4.the current number of pages in the inactive list (over all memory zones);             -> linux/mmzone.h -> zone struct->inactive_list
-5.the current number of pages in the active list whose reference bits are set (over all memory zones); -> linux
-6.the current number of pages in the inactive list whose reference bits are set (over all memory zones); ->
-7.the cumulative number of pages moved from the active list to the inactive list (since the last machine boot);
-8.the cumulative number of pages evicted from the inactive list (since the last machine boot);
-*/
+   1.the current number of free pages (over all memory zones);                             -> linux/mmzone.h -> zone struct -> free pages
+   2.the current number of pages used by slab allocator (over all memory zones);
+   3.the current number of pages in the active list (over all memory zones);               -> linux/mmzone.h -> zone struct->active_list
+   4.the current number of pages in the inactive list (over all memory zones);             -> linux/mmzone.h -> zone struct->inactive_list
+   5.the current number of pages in the active list whose reference bits are set (over all memory zones); -> linux
+   6.the current number of pages in the inactive list whose reference bits are set (over all memory zones); ->
+   7.the cumulative number of pages moved from the active list to the inactive list (since the last machine boot);
+   8.the cumulative number of pages evicted from the inactive list (since the last machine boot);
+ */
 
-#include <linux/mm_types.h>
+
 #include <linux/page-flags.h>
 #include <linux/mmzone.h>
-#include <linux/gfp.h>
 
-int main(int argc, char* argv[]){
+struct memstats
 
+asmlinkage long sys_memstats(struct memstats* info){
+
+        // structs
+        struct zone* zone;
+        struct page* page;
+
+        struct list_head* list;
+        struct list_head* free_pages;
+        struct list_head* active;
+        struct list_head* inactive;
+        long unsigned int area_length;
+        int i;
+
+        /*Iterate through every zone */
+        for_each_zone(zone){
+
+                area_length = sizeof(zone->free_area)/sizeof(struct free_area);
+
+                //iterate through areas in zone
+                for(i = 0; i<area_length; i++) {
+                        if(zone->free_area[i]) {
+                                list_for_each(free_pages, &((zone->free_area[i])->free_list)){
+
+                                        info->num_free_pages++;
+
+                                }
+                        }
+                }
+
+                
+
+
+
+
+        }
 
 }
