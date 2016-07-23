@@ -47,14 +47,26 @@ asmlinkage long sys_memstats(struct memstats* info){
 
                 //iterate through areas in zone
                 for(i = 0; i<area_length; i++) {
-                                list_for_each(free_pages, &(((struct free_area*)(zone->free_area) + i)->free_list)){
+                        list_for_each(free_pages, &(((struct free_area*)(zone->free_area) + i)->free_list)){
 
-                                        temp->num_free_pages++;
+                                temp->num_free_pages++;
 
-                                }
+                        }
                 }
 
+                list_for_each(active, &(zone->active_list)){
+                        temp->num_active_pages++;
+                        page = list_entry(active, struct page, lru);
+                        temp->num_slab_pages += test_bit(PG_slab, &page->flags);
+                        temp->num_active_ref_bits += test_bit(PG_referenced, &page->flags) :
+                }
 
+                list_for_each(inactive, &(zone->inactive_list)){
+                        temp->num_inactive_pages++;
+                        page = list_entry(inactive, struct page, lru);
+                        temp->num_slab_pages += test_bit(PG_slab, &page->flags);
+                        temp->num_inactive_ref_bits += test_bit(PG_referenced, &page->flags) :
+                }
 
         }
 
@@ -64,10 +76,8 @@ asmlinkage long sys_memstats(struct memstats* info){
         }
         else{
                 return 0;
-       } 
+        }
 
 
 
 }
-
-
