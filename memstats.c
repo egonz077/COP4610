@@ -20,9 +20,8 @@
 #include <linux/sched.h>
 #include <linux/types.h>
 #include <linux/memstats.h>
+#include <linux/uaccess.h>
 
-
-struct memstats
 
 asmlinkage long sys_memstats(struct memstats* info){
 
@@ -48,13 +47,11 @@ asmlinkage long sys_memstats(struct memstats* info){
 
                 //iterate through areas in zone
                 for(i = 0; i<area_length; i++) {
-                        if(zone->free_area[i]) {
-                                list_for_each(free_pages, &((zone->free_area[i])->free_list)){
+                                list_for_each(free_pages, &(((struct free_area*)(zone->free_area) + i)->free_list)){
 
                                         temp->num_free_pages++;
 
                                 }
-                        }
                 }
 
 
@@ -67,10 +64,10 @@ asmlinkage long sys_memstats(struct memstats* info){
         }
         else{
                 return 0;
-        }
+       } 
+
+
+
 }
 
 
-}
-
-}
